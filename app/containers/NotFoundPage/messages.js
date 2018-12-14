@@ -5,11 +5,9 @@
  */
 import { defineMessages } from 'react-intl';
 
-export const scope = 'boilerplate.containers.NotFoundPage';
-
 export default defineMessages({
   header: {
-    id: `${scope}.header`,
-    defaultMessage: 'Page not found.',
+    id: 'app.components.NotFoundPage.header',
+    defaultMessage: 'This is NotFoundPage component !',
   },
 });

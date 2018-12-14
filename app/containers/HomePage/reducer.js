@@ -11,13 +11,15 @@
  */
 import { fromJS } from 'immutable';
 
-import { CHANGE_USERNAME } from './constants';
+import { CHANGE_USERNAME, GET_MUSIC, GET_MUSIC_SUCCEEDED } from './constants';
 
 // The initial state of the App
 export const initialState = fromJS({
   username: '',
+  MusicId: '',
+  GameMusic: '',
   GameState: {
-    CurrentActionId: 40,
+    CurrentActionId: 10,
     VariableStates: [
       {
         Name: 'IsInTheFuture',
@@ -209,6 +211,11 @@ export const initialState = fromJS({
 
 function homeReducer(state = initialState, action) {
   switch (action.type) {
+    case GET_MUSIC:
+      return state.set('MusicId', action.name);
+    case GET_MUSIC_SUCCEEDED:
+      console.log(action.getMusic);
+      return state.set('GameMusic', action.getMusic);
     case CHANGE_USERNAME:
       // Delete prefixed '@' from the github username
       return state.set('username', action.name.replace(/@/gi, ''));

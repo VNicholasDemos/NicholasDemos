@@ -8,14 +8,11 @@ import { reposLoaded, repoLoadingError } from 'containers/App/actions';
 
 import request from 'utils/request';
 import { makeSelectUsername } from 'containers/HomePage/selectors';
-import { GET_MUSIC } from './constants';
-import { getMusicSucceeded } from './actions';
-import * as gameApi from '../../api/game';
 
 /**
  * Github repos request/response handler
  */
-function* getRepos() {
+export function* getRepos() {
   // Select username from store
   const username = yield select(makeSelectUsername());
   const requestURL = `https://api.github.com/users/${username}/repos?type=all&sort=updated`;
@@ -28,26 +25,6 @@ function* getRepos() {
     yield put(repoLoadingError(err));
   }
 }
-function* getMusic(vidId) {
-  console.log('vidId');
-  console.log(vidId.name);
-  try {
-    let response = null;
-    response = yield call(gameApi.getMusicData, vidId.name);
-    console.log('We get signal');
-    console.log(response);
-    if (response !== null && response !== undefined) {
-      console.log(response);
-      yield put(getMusicSucceeded(response));
-    } else {
-      console.log('oops');
-      // yield put(getMusicFailed('something happened'));
-    }
-  } catch (err) {
-    console.log('oops');
-    // yield put(getMusicFailed(e.message));
-  }
-}
 
 /**
  * Root saga manages watcher lifecycle
@@ -58,5 +35,4 @@ export default function* githubData() {
   // It returns task descriptor (just like fork) so we can continue execution
   // It will be cancelled automatically on component unmount
   yield takeLatest(LOAD_REPOS, getRepos);
-  yield takeLatest(GET_MUSIC, getMusic);
 }

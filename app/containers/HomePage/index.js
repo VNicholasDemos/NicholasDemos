@@ -6,7 +6,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Helmet } from 'react-helmet';
 // import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -21,9 +20,16 @@ import {
   makeSelectGameFile,
   makeSelectGameInventory,
   makeSelectGameState,
+  makeSelectGameMusic,
+  makeSelectGameMusicId,
 } from './selectors';
+import PrimaryAppBar from '../../components/AppBar/Primary';
+import ViewContainer from '../../components/Layout/ViewContainer';
+import ScrollView from '../../components/Layout/ScrollView';
+import LayoutBody from '../../components/Layout/LayoutBody';
+import { toggleDrawer } from '../LeftDrawer/actions';
 import { loadRepos } from '../App/actions';
-import { changeUsername } from './actions';
+import { changeUsername, getMusic } from './actions';
 // import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
@@ -44,17 +50,19 @@ function findMatchingValueInArray(name, value, ArrayOfVariables) {
 
 /* eslint-disable react/prefer-stateless-function */
 export class HomePage extends React.PureComponent {
+  static propTypes = {
+    getmusic: PropTypes.func.isRequired,
+    toggleDrawer: PropTypes.func.isRequired,
+  };
   /**
    * when initial state username is not null, submit the form to load repos
    */
-  /* componentDidMount() {
-    if (this.props.username && this.props.username.trim().length > 0) {
-      this.props.onSubmitForm();
-    }
+
+  /* componentWillMount() {
   } */
 
   render() {
-    const { GameState, GameInventory, GameFile } = this.props;
+    const { GameState, GameInventory, GameFile, GameMusic, GameMusicId } = this.props;
 
     const yourInventory = [];
     // Process inventory into text
@@ -102,7 +110,6 @@ export class HomePage extends React.PureComponent {
     // Process current state for response text and links
     let internalReturnObject = <div>Error</div>;
     if (actionStateToProcess !== null) {
-      console.log(actionStateToProcess);
       // Regex to extract all of the JSON parameters- then we convert them back to JSON, and compare them against game state.
       const internalTextParameters = actionStateToProcess.ResponseText.match(/(\{.*?\})/g);
       let finalText = actionStateToProcess.ResponseText.replace(/(\{.*?\})/g,'');
@@ -140,7 +147,7 @@ export class HomePage extends React.PureComponent {
           if (linkInternalTextParameters !== null) {
             linkInternalTextParameters.forEach(parameter => {
               const jsonifiedParameter = JSON.parse(parameter);
-              if(findMatchingValueInArray(contingency.Name, true, GameState.VariableStates)){
+              if(findMatchingValueInArray(jsonifiedParameter.Name, true, GameState.VariableStates)){
                 linkFinalText += jsonifiedParameter.Value;
               }
             });
@@ -149,19 +156,49 @@ export class HomePage extends React.PureComponent {
         }
       });
 
+      // works: 3r_Z5AYJJd4
+      // bad: yXQViqx6GMY
+      // works: iBk8owuhNkQ
+      // horrifying band music: bhi-6CG3Fr0
+      if(GameMusicId !== 'bhi-6CG3Fr0'){
+        this.props.getmusic('bhi-6CG3Fr0');
+      }
+      let audioSetup = (<div></div>);
+      if(GameMusic !=='' && GameMusicId !== undefined){
+        audioSetup = (
+          <div>
+            <audio autoPlay="autoPlay" >
+              <source src={this.props.GameMusic} />
+
+            </audio>
+          </div>
+        );
+      }
       // Compose a main window consisting of ResponseText and ActionLinks
       internalReturnObject = (
-        <div key="1">
+        <div>
           <p>{finalText}</p>
           <div><b>Your Inventory:</b></div>
           {yourInventory}
           <div><b>Possible Actions:</b></div>
           {finalActions}
+          {audioSetup}
         </div>
       );
       returnObject.push(internalReturnObject);
     }
-    return returnObject;
+
+    return (
+      <ViewContainer>
+        <ScrollView>
+          <LayoutBody>
+            <PrimaryAppBar
+              toggleDrawer={this.props.toggleDrawer}
+            />
+            {returnObject}
+          </LayoutBody>
+        </ScrollView>
+      </ViewContainer>);
   }
 }
 
@@ -169,10 +206,14 @@ HomePage.propTypes = {
   GameState: PropTypes.object,
   GameFile: PropTypes.object,
   GameInventory: PropTypes.object,
+  GameMusic: PropTypes.string,
+  GameMusicId: PropTypes.string,
 };
 
 export function mapDispatchToProps(dispatch) {
   return {
+    getmusic: vid => dispatch(getMusic(vid)),
+    toggleDrawer: () => dispatch(toggleDrawer()),
     onChangeUsername: evt => dispatch(changeUsername(evt.target.value)),
     onSubmitForm: evt => {
       if (evt !== undefined && evt.preventDefault) evt.preventDefault();
@@ -185,6 +226,8 @@ const mapStateToProps = createStructuredSelector({
   GameState: makeSelectGameState(),
   GameFile: makeSelectGameFile(),
   GameInventory: makeSelectGameInventory(),
+  GameMusic: makeSelectGameMusic(),
+  GameMusicId: makeSelectGameMusicId(),
 });
 
 const withConnect = connect(

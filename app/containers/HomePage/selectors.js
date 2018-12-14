@@ -19,4 +19,10 @@ const makeSelectGameInventory = () =>
 const makeSelectGameFile = () =>
   createSelector(selectHome, homeState => homeState.get('GameFile').toJS());
 
-export { selectHome, makeSelectUsername, makeSelectGameState, makeSelectGameInventory, makeSelectGameFile };
+const makeSelectGameMusic = () =>
+  createSelector(selectHome, homeState => homeState.get('GameMusic'));
+
+const makeSelectGameMusicId = () =>
+  createSelector(selectHome, homeState => homeState.get('MusicId'));
+
+export { selectHome, makeSelectUsername, makeSelectGameState, makeSelectGameInventory, makeSelectGameFile, makeSelectGameMusic, makeSelectGameMusicId };

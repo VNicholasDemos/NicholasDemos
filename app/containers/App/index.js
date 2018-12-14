@@ -10,8 +10,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import { Switch, Route } from 'react-router-dom';
-
 import HomePage from 'containers/HomePage/';
+
+import LeftDrawer from '../LeftDrawer';
 
 import GlobalStyle from '../../global-styles';
 
@@ -28,14 +29,15 @@ export default function App() {
   return (
     <AppWrapper>
       <Helmet
-        titleTemplate="%s - React.js Boilerplate"
-        defaultTitle="React.js Boilerplate"
+        titleTemplate="%s - VeryNicholas.com: Demos, Blogs, Sundries"
+        defaultTitle="VeryNicholas.com: Demos, Blogs, Sundries"
       >
         <meta name="description" content="A React.js Boilerplate application" />
       </Helmet>
       <Switch>
         <Route exact path="/" component={HomePage} />
       </Switch>
+      <LeftDrawer />
       <GlobalStyle />
     </AppWrapper>
   );

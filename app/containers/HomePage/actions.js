@@ -15,7 +15,7 @@
  *    }
  */
 
-import { CHANGE_USERNAME } from './constants';
+import { CHANGE_USERNAME, GET_MUSIC, GET_MUSIC_SUCCEEDED } from './constants';
 
 /**
  * Changes the input field of the form
@@ -24,6 +24,19 @@ import { CHANGE_USERNAME } from './constants';
  *
  * @return {object}    An action object with a type of CHANGE_USERNAME
  */
+export function getMusic(name) {
+  return {
+    type: GET_MUSIC,
+    name,
+  };
+}
+export function getMusicSucceeded(data) {
+  return {
+    type: GET_MUSIC_SUCCEEDED,
+    getMusic: data,
+  };
+}
+
 export function changeUsername(name) {
   return {
     type: CHANGE_USERNAME,

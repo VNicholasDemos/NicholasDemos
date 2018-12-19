@@ -13,6 +13,7 @@ import { createStructuredSelector } from 'reselect';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
+import withStyles from '@material-ui/core/styles/withStyles';
 import {
   // makeSelectRepos,
   // makeSelectLoading,
@@ -22,6 +23,7 @@ import {
   makeSelectGameState,
   makeSelectGameMusic,
   makeSelectGameMusicId,
+  makeSelectGameChangedAudio,
 } from './selectors';
 import PrimaryAppBar from '../../components/AppBar/Primary';
 import ViewContainer from '../../components/Layout/ViewContainer';
@@ -29,30 +31,42 @@ import ScrollView from '../../components/Layout/ScrollView';
 import LayoutBody from '../../components/Layout/LayoutBody';
 import { toggleDrawer } from '../LeftDrawer/actions';
 import { loadRepos } from '../App/actions';
-import { changeUsername, getMusic } from './actions';
+import { changeUsername, getMusic, changeGameState, setaudioChanged } from './actions';
 // import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import findMatchingValueInArray from '../../utils/helpers/findMatchingValueInArray'
+import AudioPlayer from '../../components/AudioPlayer';
+import H1 from '../../components/H1';
 
-function findMatchingValueInArray(name, value, ArrayOfVariables) {
-  let localCheck = false;
-  for (let i = 0; i < ArrayOfVariables.length; i++) {
-    if (
-      ArrayOfVariables[i].Name === name &&
-      localCheck === false &&
-      ArrayOfVariables[i].Value === value
-    ) {
-      localCheck = true;
-    }
-  }
-  return localCheck;
-}
+
+
+const styles = () => ({
+  body: {
+    maxWidth: 700,
+    textAlign: 'left',
+    margin: 'auto',
+    width: '70%',
+    padding: 10,
+    marginRight: '40%',
+  },
+  container: {
+    maxHeight: 335,
+    overflow: 'hidden',
+    border: '2px darkgrey',
+    borderStyle: 'dotted',
+    borderRadius: '5px',
+  },
+});
 
 /* eslint-disable react/prefer-stateless-function */
 export class HomePage extends React.PureComponent {
   static propTypes = {
     getmusic: PropTypes.func.isRequired,
     toggleDrawer: PropTypes.func.isRequired,
+    changeGameState: PropTypes.func.isRequired,
+    setaudioChanged: PropTypes.func.isRequired,
+    classes: PropTypes.object,
   };
   /**
    * when initial state username is not null, submit the form to load repos
@@ -62,15 +76,21 @@ export class HomePage extends React.PureComponent {
   } */
 
   render() {
-    const { GameState, GameInventory, GameFile, GameMusic, GameMusicId } = this.props;
+    const { GameState, GameInventory, GameFile, GameMusicId, classes } = this.props;
 
-    const yourInventory = [];
+    let yourInventory = '';
     // Process inventory into text
+    const invText = [];
     GameInventory.Items.forEach(item => {
       if (findMatchingValueInArray(item.GameVariable, true, GameState.VariableStates)) {
-        yourInventory.push(<div><p>{item.Description}</p></div>);
+        // if(!firstItem){
+        //   invText += ', ';
+        // }
+        invText.push(<li>{item.Description}</li>);
       }
     });
+    yourInventory = <ul>{invText}</ul>;
+    console.log(yourInventory);
 
     const returnObject = [];
 
@@ -131,13 +151,15 @@ export class HomePage extends React.PureComponent {
       const finalActions = [];
       actionStateToProcess.ActionLinks.forEach(actionLink => {
         let linkContingencyCheck = true;
-        if (actionLink.ContigentOn.length > 0) {
-          // check the contingentOn conditions for each one
-          actionLink.ContigentOn.forEach(contingency => {
-            if (linkContingencyCheck && !findMatchingValueInArray(contingency.Name, contingency.Value, GameState.VariableStates)) {
-              linkContingencyCheck = false;
-            }
-          });
+        if (actionLink.ContigentOn !== undefined) {
+          if (actionLink.ContigentOn.length > 0) {
+            // check the contingentOn conditions for each one
+            actionLink.ContigentOn.forEach(contingency => {
+              if (linkContingencyCheck && !findMatchingValueInArray(contingency.Name, contingency.Value, GameState.VariableStates)) {
+                linkContingencyCheck = false;
+              }
+            });
+          }
         }
         // Return the first that meets current state values.
         if (linkContingencyCheck) {
@@ -152,37 +174,81 @@ export class HomePage extends React.PureComponent {
               }
             });
           }
-          finalActions.push(<div><p>{linkFinalText}</p></div>);
+          finalActions.push(<div><p><button type="button" onClick={() => this.props.changeGameState(actionLink)}>{linkFinalText}</button></p></div>);
         }
       });
 
-      // works: 3r_Z5AYJJd4
-      // bad: yXQViqx6GMY
-      // works: iBk8owuhNkQ
-      // horrifying band music: bhi-6CG3Fr0
-      if(GameMusicId !== 'bhi-6CG3Fr0'){
-        this.props.getmusic('bhi-6CG3Fr0');
+      if(GameMusicId !== actionStateToProcess.MusicYTID){
+        const audios = document.getElementsByTagName('audio');
+        for(let i = 0, len = audios.length; i < len;i++){
+          audios[i].pause();
+        }
+        this.props.getmusic(actionStateToProcess.MusicYTID);
       }
-      let audioSetup = (<div></div>);
-      if(GameMusic !=='' && GameMusicId !== undefined){
-        audioSetup = (
-          <div>
-            <audio autoPlay="autoPlay" >
-              <source src={this.props.GameMusic} />
-
-            </audio>
-          </div>
-        );
+      const imageStyle = {
+        height: 350,
+        backgroundImage: `url(${actionStateToProcess.BackgroundId})`,
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        filter: 'blur(2px)',
+        position: 'relative',
+      };
+      const textInsetStyle = {
+        height: 330,
+        marginLeft: '10px',
+        marginRight: '10px',
+        marginTop: '0px',
+        marginBottom: '10px',
+        zIndex: '3',
+        backgroundColor: 'rgba(0,0,0, 0.4)',
+        position: 'relative',
+        color: 'white',
+        padding: '20px',
+        transform: 'translate(0, -105%)',
+      };
+      const containerStyle = {
+        paddingTop: '25px',
+        paddingBottom: '10px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        borderRadius: '20px',
+        backgroundImage: 'url("https://background-tiles.com/overview/red/patterns/large/1046.png")',
+        backgroundRepeat: 'repeat',
+        color: 'white',
+        boxShadow: 'darkgrey 5px 10px 10px ',
+      }
+      const actionStyle = {
+        paddingTop: '25px',
+        paddingBottom: '10px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        backgroundColor: 'rgba(255, 224, 158, 0.1)',
+        borderRadius: '20px',
+        color: 'white',
+        boxShadow: 'black 5px 5px 5px ',
+      }
+      const textStyle = {
+        fontFamily: 'Arial',
       }
       // Compose a main window consisting of ResponseText and ActionLinks
       internalReturnObject = (
         <div>
-          <p>{finalText}</p>
-          <div><b>Your Inventory:</b></div>
-          {yourInventory}
-          <div><b>Possible Actions:</b></div>
-          {finalActions}
-          {audioSetup}
+          <div style={containerStyle}>
+            <div><H1>A Christmas Witch</H1></div>
+            <div className={classes.container}>
+              <div style={imageStyle}></div>
+              <div style={textInsetStyle}><p style={textStyle} dangerouslySetInnerHTML={{__html: finalText}}/></div>
+            </div>
+            <div style={actionStyle}>
+              <div><b>Actions:</b></div>
+              {finalActions}
+              <div><b>Your Inventory:</b></div>
+              {yourInventory}
+              <p/>
+            </div>
+          </div>
+          <div><b>Game Settings:</b></div>
         </div>
       );
       returnObject.push(internalReturnObject);
@@ -195,7 +261,14 @@ export class HomePage extends React.PureComponent {
             <PrimaryAppBar
               toggleDrawer={this.props.toggleDrawer}
             />
-            {returnObject}
+            <div className={classes.body}>
+              {returnObject}
+              <AudioPlayer
+                changedAudio = {this.props.ChangedAudio}
+                GameMusic = {this.props.GameMusic}
+                setaudioChanged = {this.props.setaudioChanged}
+              />
+            </div>
           </LayoutBody>
         </ScrollView>
       </ViewContainer>);
@@ -208,10 +281,13 @@ HomePage.propTypes = {
   GameInventory: PropTypes.object,
   GameMusic: PropTypes.string,
   GameMusicId: PropTypes.string,
+  ChangedAudio: PropTypes.bool,
 };
 
 export function mapDispatchToProps(dispatch) {
   return {
+    setaudioChanged: () => dispatch(setaudioChanged()),
+    changeGameState: state => dispatch(changeGameState(state)),
     getmusic: vid => dispatch(getMusic(vid)),
     toggleDrawer: () => dispatch(toggleDrawer()),
     onChangeUsername: evt => dispatch(changeUsername(evt.target.value)),
@@ -228,6 +304,7 @@ const mapStateToProps = createStructuredSelector({
   GameInventory: makeSelectGameInventory(),
   GameMusic: makeSelectGameMusic(),
   GameMusicId: makeSelectGameMusicId(),
+  ChangedAudio: makeSelectGameChangedAudio(),
 });
 
 const withConnect = connect(
@@ -238,8 +315,8 @@ const withConnect = connect(
 const withReducer = injectReducer({ key: 'home', reducer });
 const withSaga = injectSaga({ key: 'home', saga });
 
-export default compose(
+export default withStyles(styles)(compose(
   withReducer,
   withSaga,
   withConnect,
-)(HomePage);
+)(HomePage));

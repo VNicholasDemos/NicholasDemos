@@ -12,10 +12,10 @@ function parseStr(str) {
 export function getMusicData(vid) {
   // vid = '3r_Z5AYJJd4';
   const audioStreams = {};
-  console.log(`https://cors-anywhere.herokuapp.com/https://www.youtube.com/get_video_info?video_id=${vid}`);
+  // console.log(`https://cors-anywhere.herokuapp.com/https://www.youtube.com/get_video_info?video_id=${vid}`);
   const finalvalue = axios.get(`https://cors-anywhere.herokuapp.com/https://www.youtube.com/get_video_info?video_id=${vid}`).then((res) => {
     const data = parseStr(res.data);
-    console.log(data);
+    // console.log(data);
     const streams = (`${data.url_encoded_fmt_stream_map  },${  data.adaptive_fmts}`).split(',');
     streams.forEach(s => {
       const stream = parseStr(s);
@@ -36,7 +36,7 @@ export function getMusicData(vid) {
       }
       if (quality) audioStreams[quality] = stream.url;
     });
-    console.log(audioStreams['128kbps']);
+    // console.log(audioStreams['128kbps']);
     return audioStreams['128kbps'];
   })
     .catch((res) => {

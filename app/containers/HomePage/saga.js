@@ -29,13 +29,13 @@ function* getRepos() {
   }
 }
 function* getMusic(vidId) {
-  console.log('vidId');
-  console.log(vidId.name);
+  // console.log('vidId');
+  // console.log(vidId.name);
   try {
     let response = null;
     response = yield call(gameApi.getMusicData, vidId.name);
-    console.log('We get signal');
-    console.log(response);
+    // console.log('We get signal');
+    // console.log(response);
     if (response !== null && response !== undefined) {
       console.log(response);
       yield put(getMusicSucceeded(response));

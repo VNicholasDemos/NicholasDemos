@@ -12,7 +12,7 @@ const styles = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    // position: 'absolute',
+    position: 'absolute',
     height: '100%',
     width: '100%',
     background: 'white',

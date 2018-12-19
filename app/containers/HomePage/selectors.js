@@ -25,4 +25,7 @@ const makeSelectGameMusic = () =>
 const makeSelectGameMusicId = () =>
   createSelector(selectHome, homeState => homeState.get('MusicId'));
 
-export { selectHome, makeSelectUsername, makeSelectGameState, makeSelectGameInventory, makeSelectGameFile, makeSelectGameMusic, makeSelectGameMusicId };
+const makeSelectGameChangedAudio = () =>
+  createSelector(selectHome, homeState => homeState.get('ChangedAudio'));
+
+export { selectHome, makeSelectUsername, makeSelectGameState, makeSelectGameInventory, makeSelectGameFile, makeSelectGameMusic, makeSelectGameMusicId, makeSelectGameChangedAudio };

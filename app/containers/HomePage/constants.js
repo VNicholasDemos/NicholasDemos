@@ -12,3 +12,5 @@
 export const CHANGE_USERNAME = 'boilerplate/Home/CHANGE_USERNAME';
 export const GET_MUSIC = 'boilerplate/Home/GET_MUSIC';
 export const GET_MUSIC_SUCCEEDED = 'boilerplate/Home/GET_MUSIC_SUCCEEDED';
+export const UPDATE_GAME_STATE = 'boilerplate/Home/UPDATE_GAME_STATE';
+export const SET_AUDIO_CHANGED = 'boilerplate/Home/SET_AUDIO_CHANGED';

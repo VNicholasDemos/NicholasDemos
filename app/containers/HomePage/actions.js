@@ -15,7 +15,7 @@
  *    }
  */
 
-import { CHANGE_USERNAME, GET_MUSIC, GET_MUSIC_SUCCEEDED } from './constants';
+import { CHANGE_USERNAME, GET_MUSIC, GET_MUSIC_SUCCEEDED, UPDATE_GAME_STATE, SET_AUDIO_CHANGED } from './constants';
 
 /**
  * Changes the input field of the form
@@ -30,10 +30,24 @@ export function getMusic(name) {
     name,
   };
 }
+
+export function setaudioChanged() {
+  return {
+    type: SET_AUDIO_CHANGED,
+  };
+}
+
 export function getMusicSucceeded(data) {
   return {
     type: GET_MUSIC_SUCCEEDED,
     getMusic: data,
+  };
+}
+
+export function changeGameState(state) {
+  return {
+    type: UPDATE_GAME_STATE,
+    state,
   };
 }
 

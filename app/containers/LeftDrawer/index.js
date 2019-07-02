@@ -20,16 +20,11 @@ import saga from './saga';
 
 export class LeftDrawer extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
-    // console.log('Associate Name');
-    // console.log(this.props.AssociateName);
 
     return (
       <LayoutLeftDrawer
         isDrawerOpen={this.props.LeftDrawer.isDrawerOpen}
         toggleDrawer={this.props.toggleDrawer}
-        // userEmail={this.props.AssociateName}
-        // userImage={this.props.AssociateImage}
-        // rights={this.props.Rights}
       />
     );
   }
@@ -44,17 +39,10 @@ function mapDispatchToProps(dispatch) {
 LeftDrawer.propTypes = {
   LeftDrawer: PropTypes.object.isRequired,
   toggleDrawer: PropTypes.func.isRequired,
-  // AssociateName: PropTypes.string,
-  // AssociateEmail: PropTypes.string,
-  // AssociateImage: PropTypes.string,
-  // Rights: PropTypes.any,
 };
 
 const mapStateToProps = createStructuredSelector({
   LeftDrawer: makeSelectLeftDrawer(),
-  // userEmail: appSelectors.makeSelectLoginAssociateEmail(),
-  // userImage: appSelectors.makeSelectLoginAssociateImage(),
-  // Rights: appSelectors.makeSelectLoginAssociateRights(),
 });
 
 const withConnect = connect(

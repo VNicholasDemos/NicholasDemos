@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { browserHistory } from 'react-router';
+import { withRouter } from 'react-router';
 import { withStyles } from '@material-ui/core/styles';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -37,7 +37,7 @@ const styles = (theme) => ({
 class Menu extends Component { // eslint-disable-line react/prefer-stateless-function
 
   handleNavClick = (link) => {
-    browserHistory.push(link);
+    this.props.history.push(link);
     this.props.toggleDrawer();
   };
 
@@ -47,7 +47,7 @@ class Menu extends Component { // eslint-disable-line react/prefer-stateless-fun
     const pageMenuData = [
       { name: 'demos.fitness', text: 'Squatpump Fitness', icon: <AssignmentIcon />, link: '/fitness/' },
       { name: 'demos.platducks', text: 'Platinum Ducks', icon: <GestureIcon />, link: '/ducats/' },
-      { name: 'demos.games', text: 'Christmas Witch', icon: <GestureIcon />, link: '/cwgame/' },
+      { name: 'demos.games', text: 'Christmas Witch', icon: <GestureIcon />, link: '/Game' },
     ];
 
     const blogMenuData = [
@@ -105,7 +105,7 @@ class Menu extends Component { // eslint-disable-line react/prefer-stateless-fun
 Menu.propTypes = {
   classes: PropTypes.object.isRequired,
   toggleDrawer: PropTypes.func,
-  // rights: PropTypes.any,
+  history: PropTypes.any,
 };
 
-export default withStyles(styles)(Menu);
+export default withStyles(styles)(withRouter(Menu));

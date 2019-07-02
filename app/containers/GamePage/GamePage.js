@@ -15,9 +15,6 @@ import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {
-  // makeSelectRepos,
-  // makeSelectLoading,
-  // makeSelectError,
   makeSelectGameFile,
   makeSelectGameInventory,
   makeSelectGameState,
@@ -25,14 +22,7 @@ import {
   makeSelectGameMusicId,
   makeSelectGameChangedAudio,
 } from './selectors';
-import PrimaryAppBar from '../../components/AppBar/Primary';
-import ViewContainer from '../../components/Layout/ViewContainer';
-import ScrollView from '../../components/Layout/ScrollView';
-import LayoutBody from '../../components/Layout/LayoutBody';
-import { toggleDrawer } from '../LeftDrawer/actions';
-import { loadRepos } from '../App/actions';
-import { changeUsername, getMusic, changeGameState, setaudioChanged } from './actions';
-// import { makeSelectUsername } from './selectors';
+import { getMusic, changeGameState, setaudioChanged } from './actions';
 import reducer from './reducer';
 import saga from './saga';
 import TextGame from '../../components/TextGame/TextGame';
@@ -63,50 +53,29 @@ export function mapDispatchToProps(dispatch) {
     setaudioChanged: () => dispatch(setaudioChanged()),
     changeGameState: state => dispatch(changeGameState(state)),
     getmusic: vid => dispatch(getMusic(vid)),
-    toggleDrawer: () => dispatch(toggleDrawer()),
-    onChangeUsername: evt => dispatch(changeUsername(evt.target.value)),
-    onSubmitForm: evt => {
-      if (evt !== undefined && evt.preventDefault) evt.preventDefault();
-      dispatch(loadRepos());
-    },
   };
 }
 
 /* eslint-disable react/prefer-stateless-function */
-export class HomePage extends React.PureComponent {
+export const GamePage = ({changeGameState, setaudioChanged, GameState, GameFile, GameInventory, GameMusic, GameMusicId, getmusic, ChangedAudio, classes}) => ( //eslint-disable-line
+  <div className={classes.body}>
+    <TextGame
+      GameInventory={GameInventory}
+      GameFile={GameFile}
+      GameState={GameState}
+      changeGameState={changeGameState}
+      GameMusicId={GameMusicId}
+      getmusic={getmusic}
+    />
+    <AudioPlayer
+      changedAudio = {ChangedAudio}
+      GameMusic = {GameMusic}
+      setaudioChanged = {setaudioChanged}
+    />
+  </div>
+);
 
-  render() {
-    const { GameState, GameFile, GameInventory, GameMusic, GameMusicId, getmusic, ChangedAudio, classes } = this.props;
-
-    return (
-      <ViewContainer>
-        <ScrollView>
-          <LayoutBody>
-            <PrimaryAppBar
-              toggleDrawer={this.props.toggleDrawer}
-            />
-            <div className={classes.body}>
-              <TextGame
-                GameInventory={GameInventory}
-                GameFile={GameFile}
-                GameState={GameState}
-                changeGameState={this.props.changeGameState}
-                GameMusicId={GameMusicId}
-                getmusic={getmusic}
-              />
-              <AudioPlayer
-                changedAudio = {ChangedAudio}
-                GameMusic = {GameMusic}
-                setaudioChanged = {this.props.setaudioChanged}
-              />
-            </div>
-          </LayoutBody>
-        </ScrollView>
-      </ViewContainer>);
-  }
-}
-
-HomePage.propTypes = {
+GamePage.propTypes = {
   GameState: PropTypes.object,
   GameFile: PropTypes.object,
   GameInventory: PropTypes.object,
@@ -114,7 +83,6 @@ HomePage.propTypes = {
   GameMusicId: PropTypes.string,
   ChangedAudio: PropTypes.bool,
   changeGameState: PropTypes.func,
-  toggleDrawer: PropTypes.func.isRequired,
   getmusic: PropTypes.func.isRequired,
   setaudioChanged: PropTypes.func.isRequired,
   classes: PropTypes.object,
@@ -132,4 +100,4 @@ export default withStyles(styles)(compose(
   withReducer,
   withSaga,
   withConnect,
-)(HomePage));
+)(GamePage));

@@ -7,7 +7,7 @@ import { LOAD_REPOS } from 'containers/App/constants';
 import { reposLoaded, repoLoadingError } from 'containers/App/actions';
 
 import request from 'utils/request';
-import { makeSelectUsername } from 'containers/HomePage/selectors';
+import { makeSelectUsername } from 'containers/GamePage/selectors';
 import { GET_MUSIC } from './constants';
 import { getMusicSucceeded } from './actions';
 import * as gameApi from '../../api/game';
@@ -37,7 +37,6 @@ function* getMusic(vidId) {
     // console.log('We get signal');
     // console.log(response);
     if (response !== null && response !== undefined) {
-      console.log(response);
       yield put(getMusicSucceeded(response));
     } else {
       console.log('oops');

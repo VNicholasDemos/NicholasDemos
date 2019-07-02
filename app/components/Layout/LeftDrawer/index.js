@@ -22,14 +22,10 @@ const LayoutLeftDrawer = (props) => {
     >
       <Header
         title="Nicholas.org Demos"
-        // userName={associateEmail}
-        // fullName={associateName}
-        // image={associateImage}
         handleChangeRequestNavDrawer={toggleDrawer}
       />
       <Menu
         toggleDrawer={toggleDrawer}
-        // rights={rights}
       />
     </Drawer>
   );
@@ -39,10 +35,6 @@ LayoutLeftDrawer.propTypes = {
   classes: PropTypes.object.isRequired,
   isDrawerOpen: PropTypes.bool.isRequired,
   toggleDrawer: PropTypes.func.isRequired,
-  // associateName: PropTypes.string,
-  // associateEmail: PropTypes.string,
-  // associateImage: PropTypes.string,
-  // rights: PropTypes.any,
 };
 
 export default withStyles(styles)(LayoutLeftDrawer);

@@ -36,6 +36,7 @@ import { changeUsername, getMusic, changeGameState, setaudioChanged } from './ac
 import reducer from './reducer';
 import saga from './saga';
 import TextGame from '../../components/TextGame/TextGame';
+import AudioPlayer from '../../components/AudioPlayer';
 
 const styles = () => ({
   body: {
@@ -75,7 +76,7 @@ export function mapDispatchToProps(dispatch) {
 export class HomePage extends React.PureComponent {
 
   render() {
-    const { GameState, GameFile, GameInventory, GameMusic, getmusic, ChangedAudio, classes } = this.props;
+    const { GameState, GameFile, GameInventory, GameMusic, GameMusicId, getmusic, ChangedAudio, classes } = this.props;
 
     return (
       <ViewContainer>
@@ -86,14 +87,17 @@ export class HomePage extends React.PureComponent {
             />
             <div className={classes.body}>
               <TextGame
-                GameState={GameState}
-                GameFile={GameFile}
                 GameInventory={GameInventory}
-                GameMusic={GameMusic}
-                getmusic={getmusic}
-                ChangedAudio={ChangedAudio}
-                setaudioChanged={setaudioChanged}
+                GameFile={GameFile}
+                GameState={GameState}
                 changeGameState={this.props.changeGameState}
+                GameMusicId={GameMusicId}
+                getmusic={getmusic}
+              />
+              <AudioPlayer
+                changedAudio = {ChangedAudio}
+                GameMusic = {GameMusic}
+                setaudioChanged = {this.props.setaudioChanged}
               />
             </div>
           </LayoutBody>
@@ -107,11 +111,12 @@ HomePage.propTypes = {
   GameFile: PropTypes.object,
   GameInventory: PropTypes.object,
   GameMusic: PropTypes.string,
+  GameMusicId: PropTypes.string,
   ChangedAudio: PropTypes.bool,
   changeGameState: PropTypes.func,
   toggleDrawer: PropTypes.func.isRequired,
   getmusic: PropTypes.func.isRequired,
-  // setaudioChanged: PropTypes.func.isRequired,
+  setaudioChanged: PropTypes.func.isRequired,
   classes: PropTypes.object,
 };
   

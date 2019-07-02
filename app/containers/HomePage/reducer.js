@@ -23,8 +23,7 @@ function homeReducer(state = initialState, action) {
       // console.log(action.state);
       // console.log(state.get('GameState').toJS());
       const LocalGameState = state.get('GameState').toJS(); //eslint-disable-line
-      console.log(action);
-      
+
       if(action.state.LinkID==='Back') {
         LocalGameState.CurrentActionId = LocalGameState.PrevActionId;
       } else {

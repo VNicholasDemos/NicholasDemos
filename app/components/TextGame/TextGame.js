@@ -3,21 +3,19 @@ import { jsx } from '@emotion/core';
 import React, { useEffect, useState } from 'react'; //eslint-disable-line
 import PropTypes from 'prop-types';
 import {GameImage, textInsetStyle, containerStyle, actionStyle, innerContainerStyle, textStyle} from './Textgame.elements';
-// import AudioPlayer from '../AudioPlayer';
 import findMatchingValueInArray from '../../utils/helpers/findMatchingValueInArray'
 import H1 from '../H1';
 
-// GameMusic, GameMusicId, ChangedAudio, getmusic, setaudioChanged, 
-const TextGame = ({GameInventory, GameFile, GameState, changeGameState}) => {
+
+const TextGame = ({GameInventory, GameFile, GameState, changeGameState, GameMusicId, getmusic }) => {
 
   const [finalActions, setFinalActions] = useState([]);
   const [finalText, setFinalText] = useState([]);
   const [yourInventory, setYourInventory] = useState(<ul>Nothing</ul>);
   const [actionStateToProcess, setActionStateToProcess] = useState(null);
 
-
+  // Process inventory into text
   useEffect(() => {
-    // Process inventory into text
     const invText = [];
     GameInventory.Items.forEach(item => {
       if (findMatchingValueInArray(item.GameVariable, true, GameState.VariableStates)) {
@@ -27,6 +25,7 @@ const TextGame = ({GameInventory, GameFile, GameState, changeGameState}) => {
     setYourInventory(<ul>{invText}</ul>);
   }, [GameInventory, GameState]);
 
+  // Process GameState to get current state- this defines background, music, text, options etc.
   useEffect(() => {
     let actionToProcess = null;
     // Find Action by current state
@@ -60,6 +59,7 @@ const TextGame = ({GameInventory, GameFile, GameState, changeGameState}) => {
     }
   }, [GameFile, GameState]);
 
+  // Based on your current state, process link options for next states
   useEffect(()=>{
     if (actionStateToProcess !== null) {
       // Regex to extract all of the JSON parameters- then we convert them back to JSON, and compare them against game state.
@@ -115,60 +115,50 @@ const TextGame = ({GameInventory, GameFile, GameState, changeGameState}) => {
 
     }
   }, [actionStateToProcess, GameState]);
-  /*
-    useEffect(()=>{
-        if (actionStateToProcess !== null) {
-            if(GameMusicId !== actionStateToProcess.MusicYTID){
-                const audios = document.getElementsByTagName('audio');
-                for(let i = 0, len = audios.length; i < len;i++){
-                    audios[i].pause();
-                }
-                getmusic(actionStateToProcess.MusicYTID);
-            }
+
+  // Based on your current state, process music and pass it back up the chain if it needs to be altered
+  useEffect(()=>{
+    if (actionStateToProcess !== null) {
+      if(GameMusicId !== actionStateToProcess.MusicYTID){
+        const audios = document.getElementsByTagName('audio');
+        for(let i = 0, len = audios.length; i < len;i++){
+          audios[i].pause();
         }
-    }, [GameMusicId, actionStateToProcess]);
-*/
+        getmusic(actionStateToProcess.MusicYTID);
+      }
+    }
+  }, [GameMusicId, actionStateToProcess]);
+
   return (
     <>
-       <div>
-         <div css={containerStyle}>
-           <div><H1>A Christmas Witch</H1></div>
-           <div css={innerContainerStyle}>
-             <GameImage actionStateToProcess={actionStateToProcess}/>
-             <div css={textInsetStyle}><p css={textStyle} dangerouslySetInnerHTML={{__html: finalText}}/></div>
-           </div>
-           <div css={actionStyle}>
-             <div><b>Actions:</b></div>
-             {finalActions}
-             <div><b>Your Inventory:</b></div>
-             {yourInventory}
-             <p/>
-           </div>
-         </div>
-         <div><b>Game Settings:</b></div>
-       </div>
-   </>
+        <div>
+          <div css={containerStyle}>
+            <div><H1>A Christmas Witch</H1></div>
+            <div css={innerContainerStyle}>
+              <GameImage actionStateToProcess={actionStateToProcess}/>
+              <div css={textInsetStyle}><p css={textStyle} dangerouslySetInnerHTML={{__html: finalText}}/></div>
+            </div>
+            <div css={actionStyle}>
+              <div><b>Actions:</b></div>
+              {finalActions}
+              <div><b>Your Inventory:</b></div>
+              {yourInventory}
+              <p/>
+            </div>
+          </div>
+          <div><b>Game Settings:</b></div>
+        </div>
+    </>
   );
 }
-/*
-
-        <AudioPlayer
-        changedAudio = {ChangedAudio}
-        GameMusic = {GameMusic}
-        setaudioChanged = {setaudioChanged}
-        />
-        */
 
 TextGame.propTypes = {
   GameState: PropTypes.object,
   GameFile: PropTypes.object,
   GameInventory: PropTypes.object,
-  GameMusic: PropTypes.string,
   GameMusicId: PropTypes.string,
   ChangedAudio: PropTypes.bool,
   getmusic: PropTypes.func,
-  setaudioChanged: PropTypes.func,
-  changeGameState: PropTypes.func,
 };
   
 export default TextGame;
